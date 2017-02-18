@@ -1,0 +1,340 @@
+/
+ * Provided abbreviations
+ * <ANY> - any Unicode code point
+ * <USP> - any Unicode space (non-ascii character from class Zs)
+ * <IDSTART> - any Unicode ID_Start character
+ * <IDCONTINUE> - any Unicode ID_Continue character
+ * <EOF> - end of file
+ */
+
+
+
+<TAB> ::
+    U+0009
+
+<SP> ::
+    U+0020
+
+<LF> ::
+    U+000A
+
+<CR> ::
+    U+000D
+
+[syntactic goals JsgFile]
+[lexical goals InputElementFile or InputElementGrammar or InputElementProduction or InputElementLiteral]
+
+InputElementFile ::
+    WhiteSpace
+    LineTerminatorSequence
+    Comment
+    Abbreviation
+    ProductionName
+    ProductionPunctuator
+    GrammarStart
+
+InputElementGrammar ::
+    WhiteSpace
+    LineTerminatorSequence
+    ProductionName
+    Abbreviation
+    GrammarLiteral
+    ArgumentNumber
+    GrammarStart
+
+InputElementProduction ::
+    WhiteSpace
+    LineTerminatorSequence
+    ProductionName
+    Abbreviation
+    GrammarStart
+    UnicodeCharacter
+    ProductionLiteral
+
+InputElementLiteral ::
+    WhiteSpace
+    LineTerminatorSequence
+    GrammarStart
+    Literal
+
+SourceCharacter ::
+    <ANY>
+
+AsciiSymbol :: one of
+    ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~
+
+AsciiUpperCase :: one of
+    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+
+AsciiLowerCase :: one of
+    a b c d e f g h i j k l m n o p q r s t u v w x y z
+
+DecimalDigit :: one of
+    0 1 2 3 4 5 6 7 8 9
+
+NonZeroDecimalDigit :: one of
+    1 2 3 4 5 6 7 8 9
+
+HexDigit :: one of
+    0 1 2 3 4 5 6 7 8 9 a A b B c C d D e E f F
+
+WhiteSpace ::
+    <TAB>
+    <SP>
+
+LineTerminator ::
+    <LF>
+    <CR>
+
+LineTerminatorSequence ::
+    <LF>
+    <CR>
+    <CR> <LF>
+
+Comment ::
+    MultiLineComment
+    SingleLineComment
+
+MultiLineComment ::
+    /* MultiLineCommentChars[opt] */
+
+MultiLineCommentChars ::
+    MultiLineCommentChar MultiLineCommentChars[opt]
+
+MultiLineCommentChar ::
+    LineTerminatorSequence
+    * [lookahead not /]
+    SourceCharacter [but not one of * or LineTerminator]
+
+SingleLineComment ::
+    // SingleLineCommentChars[opt]
+
+SingleLineCommentChars ::
+    SingleLineCommentChar SingleLineCommentChars[opt]
+
+SingleLineCommentChar ::
+    SourceCharacter [but not LineTerminator] 
+
+Abbreviation ::
+    < AbbreviationLetters >
+
+AbbreviationLetters ::
+    AsciiUpperCase
+    AbbreviationLetters AsciiUpperCase
+
+ProductionName ::
+   AsciiUpperCase [lookahead not in AsciiSymbol]
+   ProductionName ProductionNamePart
+
+ProductionNamePart ::
+    AsciiUpperCase 
+    AsciiLowerCase 
+
+ProductionPunctuator :: one of
+    : ::
+
+GrammarStart :: [after] [lexical goal InputElementGrammar]
+    [ [but not LiteralFirstSymbol]
+
+GrammarLiteral ::
+    LiteralChars
+
+LiteralChars[Literal, Production] ::
+    LiteralFirstChar[?Literal]
+    LiteralChars[?Literal, ?Production] LiteralNextChar[?Literal, ?Production]
+
+LiteralFirstChar[Literal] ::
+    LiteralFirstSymbol
+    [+Literal] AsciiUpperCase
+    AsciiLowerCase
+    DecimalDigit
+
+/*
+ * Literals can only start with a symbol if they are not ambigous with
+ * the begining of the following grammar constructs:
+ * [A-Z    - production name parameter
+ * [?A-Z   - production name query parameter
+ * [+A-Z   - production name only restriction
+ * [~A-Z   - production name not restriction
+ * [a-z    - special instruction
+ * <A-Z    - abbreviation
+ * $1-9    - argument number
+ *
+ * Recognition of these sequences requires the use of a lexical production
+ * so that the characters can be specified with spaces between them
+ */
+LiteralFirstSymbol ::
+    AsciiSymbol [but not [ or < or $]
+    [ [lookahead not in GrammarStartLookahead]
+    < [lookahead not in AsciiUpperCase]
+    $ [lookahead not in NonZeroDecimalDigit
+
+GrammarStartLookahead ::
+    AsciiUpperCase
+    ? AsciiUpperCase
+    + AsciiUpperCase
+    ~ AsciiUpperCase
+    AsciiLowerCase
+
+LiteralNextChar[Literal, Production] ::
+    AsciiLowerCase
+    DecimalDigit
+    [+Literal] AsciiUpperCase
+    [+Literal] AsciiSymbol
+    [+Production] AsciiSymbol
+
+UnicodeCharacter ::
+    U+ HexDigit HexDigit HexDigit HexDigit
+
+ProductionLiteral ::
+    LiteralChars[Production]
+
+Literal ::
+    LiteralChars[Literal]
+    
+ArgumentNumber ::
+    $ NonZeroDecimalDigit
+
+JsgFile :
+    Definitions
+    
+Definitions :
+    Definition
+    Definitions Definition
+
+Definition :
+    SpecialInstruction
+    AbbreviationDefinition
+    ProductionDefinition
+
+AbbreviationDefinition :
+    Abbreviation :: [indent] UnicodeCharacter
+
+ProductionDefinition :
+    LexicalProduction
+    SyntacticProduction
+
+LexicalProduction :
+    ParameterizedProductionName :: [indent] ProductionDetail
+
+SyntacticProduction :
+    ParameterizedProductionName : [indent] ProductionDetail
+ 
+ProductionDetail :
+    one of OneOfLiterals
+    Productions
+
+ParameterizedProductionName[Query] :
+    ProductionName ProductionParameters[?Query][opt]
+
+ProductionParameters[Query] :
+    GrammarStart ProductionParameterList[?Query] ]
+
+ProductionParameterList[Query] :
+    ProductionParameter[?Query]
+    ProductionParameterList[?Query] , ProductionParameter[?Query]
+
+ProductionParameter[Query] :
+    ProductionName
+    [+Query] ? ProductionName
+
+OneOfLiterals : 
+    OneOfLiteral
+    OneOfLiterals OneOfLiteral
+
+OneOfLiteral ::
+    Literal
+    SpecialInstruction
+
+Productions :
+    Production
+    Production Production
+
+Production :
+    ProductionStartItem [indent] ProductionList
+
+ProductionStartItem :
+    ProductionRestriction
+    ProductionItem
+
+ProductionRestriction :
+    GrammarStart + ProductionName ]
+    GrammarStart ~ ProductionName ]
+
+ProductionList :
+    [empty]
+    ProductionList ProductionItem
+
+ProductionItem :
+    OptionalParameterizedProductionName
+    SpecialInstruction
+    ProductionLiteral
+
+OptionalParameterizedProductionName :
+    ParameterizedProductionName[Query] OptionalMarker[opt]
+
+OptionalMarker :
+    GrammarStart opt ]
+
+SpecialInstruction : 
+    GrammarStart CoreSpecialInstruction ]
+
+CoreSpecialInstruction :
+    EmptyProduction
+    LookaheadRestriction
+    ButNotRestriction
+    ProductionRestriction
+    GoalProduction
+    LocationInstruction
+    ReparseInstruction
+
+EmptyProduction :
+    empty
+
+LookaheadRestriction :
+    lookahead not RestrictedTerminal
+    lookahead not in ProductionName
+    lookahead not in { RestrictedItemList }
+
+RestrictedTerminal ::
+    Abbreviation
+    GrammarLiteral
+    
+RestrictedItem :
+    RestrictedTerminal RestrictedTerminal[opt]
+    ProductionName
+
+RestrictedItemList :
+    RestrictedItem
+    RestrictedItemList , RestrictedItem
+
+RestrictedItemOrList :
+    RestrictedItem or RestrictedItem
+    RestrictedItemOrList or RestrictedItem
+
+ButNotRestriction :
+    but not RestrictedItem
+    but not one of RestrictedItemOrList
+
+ProductionRestriction :
+    no ProductionName here
+
+GoalProduction :
+    lexical goal ProductionName
+    lexical goals ProductionNameOrList
+    syntactic goals ProductionNameOrList
+    if syntactic goal ProductionName
+
+ProductionNameOrList :
+    ProductionName
+    ProductionNameOrList or ProductionName
+
+LocationInstruction :
+    before
+    after
+    indent
+
+ReparseInstruction :
+    reparse ArgumentNumber[opt] using ParameterizedProductionName[Query]
+    reparse or error
+
