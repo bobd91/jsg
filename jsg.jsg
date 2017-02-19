@@ -167,7 +167,7 @@ LiteralFirstSymbol ::
     AsciiSymbol [but not [ or < or $]
     [ [lookahead not in GrammarStartLookahead]
     < [lookahead not in AsciiUpperCase]
-    $ [lookahead not in NonZeroDecimalDigit
+    $ [lookahead not in NonZeroDecimalDigit]
 
 GrammarStartLookahead ::
     AsciiUpperCase

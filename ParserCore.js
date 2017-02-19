@@ -32,7 +32,11 @@ class ParserCore {
         if(this.processWhiteSpace(type, length)) {
             return null;
         }
-        return this.makeToken(type, length);
+        return this.makeToken(type, 0, length);
+    }
+
+    literalToken(type, ltype, length) {
+        this.makeToken(type, ltype, length);
     }
 
     skipToken(length) {
@@ -41,7 +45,7 @@ class ParserCore {
         this.forward(length);
     }
 
-    makeToken(type, length) {
+    makeToken(type, ltype, length) {
         let pos = this.pos;
         if(length === 0 && type !== this.Token.$EOF) {
             length = 1;
@@ -57,7 +61,7 @@ class ParserCore {
         }
         this.forward(length);
         let end = { line: this.line, col: this.pos - this.linepos};
-        return new Token(type, this.input, pos, length, start, end);
+        return new Token(type, subtype, this.input, pos, length, start, end);
     }
     
     processWhiteSpace(type, length) {

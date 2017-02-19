@@ -531,7 +531,7 @@ Identifier :
  * 12.2 Primary Expression
  */
 
-PrimaryExpression[Yield] :
+PrimaryExpression[Yield] : [lexical goal InputElementRegExp]
     this
     IdentifierReference[?Yield]
     Literal
@@ -620,7 +620,7 @@ CoverInitializedName[Yield] :
     IdentifierReference[?Yield] Initializer[In, ?Yield]
 
 Initializer[In, Yield] :
-= AssignmentExpression[?In, ?Yield]
+    = AssignmentExpression[?In, ?Yield]
 
 /*
  * 12.2.9 Template Literals
@@ -630,11 +630,11 @@ TemplateLiteral[Yield] :
     NoSubstitutionTemplate
     TemplateHead Expression[In, ?Yield] TemplateSpans[?Yield]
 
-TemplateSpans[Yield] :
+TemplateSpans[Yield] : [lexical goal InputElementTemplateTail]
     TemplateTail
     TemplateMiddleList[?Yield] TemplateTail
 
-TemplateMiddleList[Yield] :
+TemplateMiddleList[Yield] : [lexical goal InputElementTemplateTail]
     TemplateMiddle Expression[In, ?Yield]
     TemplateMiddleList[?Yield] TemplateMiddle Expression[In, ?Yield]
 
@@ -818,7 +818,7 @@ AssignmentExpression[In, Yield] :
  ArrayLiteral[?Yield] = AssignmentExpression[?In, ?Yield] [reparse $1 using AssignmentPattern[?Yield]]
  LeftHandSideExpression[?Yield] AssignmentOperator AssignmentExpression[?In, ?Yield]
 
-  AssignmentOperator : one of
+AssignmentOperator : one of
   *= /= %= += -= <<= >>= >>>= &= ^= |= 
 
 /*

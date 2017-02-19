@@ -669,7 +669,7 @@ class JsgParser extends ParserCore {
 
     parseLookaheadRestriction(token) {
         let r = [token];
-        r.push(this.parse$Token(this.Token.GrammarLiteral$not));
+        r.push(this.findTokenType(this.Token.GrammarLiteral$not));
         token = this.findToken();
         r.push(token);
         if(token.type === this.Token.GrammarLiteral$in) {
@@ -702,6 +702,32 @@ class JsgParser extends ParserCore {
         return this.ast.addRestrictedItemList(r);
     }
 
+    parseRestrictedItem() {
+        let r = [];
+        let token = this.findToken();
+        if(token.type === this.Token.ProductionName) {
+            r.push(token);
+        } else if(token.type === this.Token.Abbreviation ||
+                  token.type === this.Token.GramarLiteral) {
+            r.push(token);
+            token = this.peekToken();
+            if(token.type === this.Token.Abbreviation ||
+                  token.type === this.Token.GramarLiteral) {
+                r.push(this.peekedToken());
+            }
+        } else {
+            this.unexpectedToken(token);
+        }
+        return this.ast.addRestrictedItem(r);
+    }
+    
+    parseButNotRestriction() {
+
+
+
+
+    } 
+
 
 
     createLookups() {
@@ -714,6 +740,7 @@ class JsgParser extends ParserCore {
             Comment: 3,
             Abbreviation: 5,
             ProductionName: 6,
+            ProductionPunctuator: 7,
             GrammarStart: 8,
             GrammarLiteral: 9,
             ArgumentNumber: 10,
