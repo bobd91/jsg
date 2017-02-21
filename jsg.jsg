@@ -1,6 +1,44 @@
 // TODO: no literals in InputElementFile ATM which wont work
 //       and it brings the while Literal issue back up
+//
 //       I can't even remember why I need InputElementGrammar and GrammarLiteral!!!
+//
+//       Still have problem with U+ being literals
+//       and javascript definitions for patterns FlagChar[U]
+//       where U would be a ProductionParameter (uses ProductionName token)
+//       At the moment to support U+ a ProductName first character cannot be followed by AsciiSymbol
+//       but where does that leave [U]
+//       Idea: [ ProductionParameter ] 
+//             ProductionParemeter: + PPName or ? PPName or ~ PPName or PPName
+//             ProductionParameterName: [lexical goal InputElementPPName]
+//                                      which only recognizes A[a]*
+//             Then define ProductionName as being A[a]+
+//             So U is a PPName but not a ProductionName
+//
+//       Also the difference between
+//       [ but not one of ...      multiple ProductionLiterals
+//       [but not one of ...       a SpecialInstruction
+//       and, from above
+//       [ Aa ]                    Ascii [, ProductionName, ]
+//       [Aa]                      ProductionParameters
+//
+//       Also, may want to recognize
+//       [~, [+, [? as as literal but
+//       [~PPName] as ProductionParameter
+//       Is this a problem?  Not sure that it is
+//       [~ ProductionName ] vs [~PPName] are still different
+//
+//       All seem to boil down to whitespace handling
+//
+//
+//       Another, separate issue, 
+//       How to recognize sequences of symbol literals in comma lists?
+//       not one of &, -), +,, - for example where this means
+//       not one of "&" "-)" "+," "-"
+//       No idea how to handle this
+//
+//       Many more to come I am sure :)
+
 
 /*
  * Provided abbreviations
