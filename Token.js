@@ -1,8 +1,8 @@
 
 class Token {
-    constructor(type, ltype, text, pos, length, start, end) {
+    constructor(type, literal, text, pos, length, start, end) {
         this.type = type;
-        this.ltype = ltype;
+        this.literal = literal;
         this.text = text;
         this.pos =  pos;
         this.length = length;
@@ -10,7 +10,7 @@ class Token {
         this.end = end;
     }
     toString() {
-        return `${this.type} ${this.ltype} (${this.start.line}:${this.start.col})(${this.end.line}:${this.end.col}) ${this.text.slice(this.pos, this.pos + this.length)}`;
+        return `${this.type} ${this.literal} (${this.start.line}:${this.start.col})(${this.end.line}:${this.end.col}) ${this.text.slice(this.pos, this.pos + this.length)}`;
     }
 }
 

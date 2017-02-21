@@ -6,6 +6,8 @@ class JsgParser extends ParserCore {
         createLookups();
     }
 
+    // TODO: isolate whitespace functions so we can remove
+    //       whitespace handling in acceptToken
     lexKnownToken(t) {
         let s1 = 1;
         if(t === this.Token.LineTerminatorSequence) {
@@ -107,9 +109,9 @@ class JsgParser extends ParserCore {
 
     lexProductionPunctuator__3A() {
         if(0x3A === this.la(1)) {
-            return this.acceptToken(this.Token.ProductionPunctuator_3A3A, 2);
+            return this.acceptToken(this.Literal.ProductionPunctuator_3A3A, 2);
         }
-        return this.acceptToken(this.Token.ProductionPunctuator_3A, 1);
+        return this.acceptToken(this.Literal.ProductionPunctuator_3A, 1);
     }
 
     // After /*
@@ -382,7 +384,7 @@ class JsgParser extends ParserCore {
        && 0x65 === this.la(++s)
        && 0x72 === this.la(++s)
        && !this.isAsciiLowerCase(this.la(++s))) {
-           return this.acceptToken(this.Token.GrammarLiteral$after, s);
+           return this.acceptToken(this.Literal.GrammarLiteral$after, s);
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
     }
@@ -396,12 +398,12 @@ class JsgParser extends ParserCore {
            && 0x72 === this.la(++s)
            && 0x65 === this.la(++s)
            && !this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$before, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$before, s);
            }
         } else if(0x75 === this.la(s)) {
             if(0x74 === this.la(++s)
                && !this.isAsciiLowerCase(this.la(++s))) {
-                   return this.acceptToken(this.Token.GrammarLiteral$but, s);
+                   return this.acceptToken(this.Literal.GrammarLiteral$but, s);
                }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -415,14 +417,14 @@ class JsgParser extends ParserCore {
                && 0x74 === this.la(++s)
            && 0x79 === this.la(++s)
            && !this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$empty, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$empty, s);
            }
         } else if(0x72 === this.la(s)) {
             if(0x72 === this.la(++s)
                && 0x6F === this.la(++s)
            && 0x72 === this.la(++s)
            && !this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$error, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$error, s);
            }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -435,10 +437,10 @@ class JsgParser extends ParserCore {
            && 0x61 === this.la(++s)
        && 0x6C === this.la(++s)) {
            if(!this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$goal, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$goal, s);
            } else if(0x73 === this.la(s) 
                      && !this.isAsciiLowerCase(this.la(++s))) {
-                         return this.acceptToken(this.Token.GrammarLiteral$goals, s);
+                         return this.acceptToken(this.Literal.GrammarLiteral$goals, s);
                      }
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -451,7 +453,7 @@ class JsgParser extends ParserCore {
            && 0x72 === this.la(++s)
        && 0x65 === this.la(++s)
        && !this.isAsciiLowerCase(this.la(++s))) {
-           return this.acceptToken(this.Token.GrammarLiteral$here, s);
+           return this.acceptToken(this.Literal.GrammarLiteral$here, s);
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
     }
@@ -461,17 +463,17 @@ class JsgParser extends ParserCore {
         let s = 1;
         if(0x66 === this.la(s)) {
             if(!this.isAsciiLowerCase(this.la(++s))) {
-                return this.acceptToken(this.Token.GrammarLiteral$if, s);
+                return this.acceptToken(this.Literal.GrammarLiteral$if, s);
             }
         } else if(0x6E === this.la(s)) {
             if(!this.isAsciiLowerCase(this.la(++s))) {
-                return this.acceptToken(this.Token.GrammarLiteral$in, s);
+                return this.acceptToken(this.Literal.GrammarLiteral$in, s);
             } else if(0x64 === this.la(s) 
                       && 0x65 === this.la(++s)
                   && 0x6E === this.la(++s)
                   && 0x74 === this.la(++s)
                   && !this.isAsciiLowerCase(this.la(++s))) {
-                      return this.acceptToken(this.Token.GrammarLiteral$indent, s);
+                      return this.acceptToken(this.Literal.GrammarLiteral$indent, s);
                   }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -487,7 +489,7 @@ class JsgParser extends ParserCore {
            && 0x61 === this.la(++s)
            && 0x6C === this.la(++s)
            && !this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$lexical, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$lexical, s);
            }
         } else if(0x6F === this.la(s)) {
             if(0x6F === this.la(++s)
@@ -498,7 +500,7 @@ class JsgParser extends ParserCore {
            && 0x61 === this.la(++s)
            && 0x64 === this.la(++s)
            && !this.isAsciiLowerCase(this.la(++s))) {
-               return this.acceptToken(this.Token.GrammarLiteral$lookahead, s);
+               return this.acceptToken(this.Literal.GrammarLiteral$lookahead, s);
            }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -509,10 +511,10 @@ class JsgParser extends ParserCore {
         let s = 1;
         if(0x6F === this.la(s)) {
             if(!this.isAsciiLowerCase(this.la(++s))) {
-                return this.acceptToken(this.Token.GrammarLiteral$no, s);
+                return this.acceptToken(this.Literal.GrammarLiteral$no, s);
             } else if(0x74 === this.la(s) 
                       && !this.isAsciiLowerCase(this.la(++s))) {
-                          return this.acceptToken(this.Token.GrammarLiteral$not, s);
+                          return this.acceptToken(this.Literal.GrammarLiteral$not, s);
                       }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -523,21 +525,21 @@ class JsgParser extends ParserCore {
         let s = 1;
         if(0x66 === this.la(s)) {
             if(!this.isAsciiLowerCase(this.la(++s))) {
-                return this.acceptToken(this.Token.GrammarLiteral$of, s);
+                return this.acceptToken(this.Literal.GrammarLiteral$of, s);
             }
         } else if(0x6E === this.la(s)) {
             if(0x65 === this.la(++s)
                && !this.isAsciiLowerCase(this.la(++s))) {
-                   return this.acceptToken(this.Token.GrammarLiteral$one, s);
+                   return this.acceptToken(this.Literal.GrammarLiteral$one, s);
                }
         } else if(0x70 === this.la(s)) {
             if(0x74 === this.la(++s)
                && !this.isAsciiLowerCase(this.la(++s))) {
-                   return this.acceptToken(this.Token.GrammarLiteral$opt, s);
+                   return this.acceptToken(this.Literal.GrammarLiteral$opt, s);
                }
         } else if(0x72 === this.la(s)) {
             if(!this.isAsciiLowerCase(this.la(++s))) {
-                return this.acceptToken(this.Token.GrammarLiteral$or, s);
+                return this.acceptToken(this.Literal.GrammarLiteral$or, s);
             }
         }
         return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
@@ -553,7 +555,7 @@ class JsgParser extends ParserCore {
        && 0x73 === this.la(++s)
        && 0x65 === this.la(++s)
        && !this.isAsciiLowerCase(this.la(++s))) {
-           return this.acceptToken(this.Token.GrammarLiteral$relex, s);
+           return this.acceptToken(this.Literal.GrammarLiteral$relex, s);
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
     }
@@ -570,7 +572,7 @@ class JsgParser extends ParserCore {
        && 0x69 === this.la(++s)
        && 0x63 === this.la(++s)
        && !this.isAsciiLowerCase(this.la(++s))) {
-           return this.acceptToken(this.Token.GrammarLiteral$syntactic, s);
+           return this.acceptToken(this.Literal.GrammarLiteral$syntactic, s);
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
     }
@@ -583,7 +585,7 @@ class JsgParser extends ParserCore {
        && 0x6E === this.la(++s)
        && 0x67 === this.la(++s)
        && !this.isAsciiLowerCase(this.la(++s))) {
-           return this.acceptToken(this.Token.GrammarLiteral$using, s);
+           return this.acceptToken(this.Literal.GrammarLiteral$using, s);
        }
        return this.acceptToken(this.Token.GrammarLiteral, this.lexGrammarLiteral(s));
     }
@@ -630,7 +632,7 @@ class JsgParser extends ParserCore {
     parseSpecialInstruction(token) {
         let r = [token];
         r.push[this.parseCoreSpecialInstruction];
-        r.push[this.findTokenType(this.Token.GrammarLiteral_5D)];
+        r.push[this.findTokenType(this.Literal.GrammarLiteral_5D)];
         return this.ast.SpecialInstruction(r);
     }
 
@@ -638,23 +640,23 @@ class JsgParser extends ParserCore {
         let r;
         let token = this.findToken();
         let t = token.type;
-        if(t === this.Token.GrammarLiteral$empty) {
+        if(t === this.Literal.GrammarLiteral$empty) {
             r = this.parseEmptyProduction(token);
-        } else if(t === this.Token.GrammarLiteral$lookahead) {
+        } else if(t === this.Literal.GrammarLiteral$lookahead) {
             r = this.parseLookaheadRestriction(token);
-        } else if(t === this.Token.GrammarLiteral$but) {
+        } else if(t === this.Literal.GrammarLiteral$but) {
             r = this.parseButNotRestriction(token);
-        } else if(t === this.Token.GrammarLiteral$no) {
+        } else if(t === this.Literal.GrammarLiteral$no) {
             r = this.parseProductionRestriction(token);
-        } else if(t === this.Token.GrammarLiteral$lexical
-            || t === this.Token.GrammarLiteral$syntactic
-                || t === this.Token.GrammarLiteral$if) {
+        } else if(t === this.Literal.GrammarLiteral$lexical
+            || t === this.Literal.GrammarLiteral$syntactic
+                || t === this.Literal.GrammarLiteral$if) {
                     r = this.parseGoalProduction(token);
-                } else if(t === this.Token.GrammarLiteral$after
-                    || t === this.Token.GrammarLiteral$before
-                        || t === this.Token.GrammarLiteral$indent) {
+                } else if(t === this.Literal.GrammarLiteral$after
+                    || t === this.Literal.GrammarLiteral$before
+                        || t === this.Literal.GrammarLiteral$indent) {
                             r = this.parseLocationInstruction(token);
-                        } else if(t === this.Token.GrammarLiteral$reparse) {
+                        } else if(t === this.Literal.GrammarLiteral$reparse) {
                             r = this.parseReparseInstruction(token);
                         } else {
                             this.unexpectedToken(token);
@@ -669,15 +671,15 @@ class JsgParser extends ParserCore {
 
     parseLookaheadRestriction(token) {
         let r = [token];
-        r.push(this.findTokenType(this.Token.GrammarLiteral$not));
+        r.push(this.findTokenType(this.Literal.GrammarLiteral$not));
         token = this.findToken();
         r.push(token);
-        if(token.type === this.Token.GrammarLiteral$in) {
+        if(token.type === this.Literal.GrammarLiteral$in) {
             token = this.findToken();
-            if(token.type === this.Token.GrammarLiteral_7B) {
+            if(token.type === this.Literal.GrammarLiteral_7B) {
                 r.push(token);
                 r.push(this.parseRestrictedItemList());
-                r.push(this.findTokenType(this.Token.GrammarLiteral_7D));
+                r.push(this.findTokenType(this.Literal.GrammarLiteral_7D));
             } else if(token.type === this.Token.ProductionName) {
                 r.push(token);
             } else {
@@ -692,7 +694,7 @@ class JsgParser extends ParserCore {
         let d = this.parseRestrictedItem();
         while(d) {
             r.push(d);
-            if(this.peekTokenType(this.Token.GrammarLiteral_2C)) {
+            if(this.peekTokenType(this.Literal.GrammarLiteral_2C)) {
                 r.push(this.peekedToken());
                 d = this.parseRestrictedItem();
             } else {
@@ -735,77 +737,78 @@ class JsgParser extends ParserCore {
         this.Token = {
             $EOF: -1,
             $Error: 0,
-            WhiteSpace: 1,
-            LineTerminatorSequence: 2,
-            Comment: 3,
-            Abbreviation: 5,
-            ProductionName: 6,
-            ProductionPunctuator: 7,
-            GrammarStart: 8,
-            GrammarLiteral: 9,
-            ArgumentNumber: 10,
-            UnicodeCharacter: 11,
-            ProductionLiteral: 12,
-            Literal: 13,
-            ProductionPunctuator_3A: 14,
-            ProductionPunctuator_3A3A: 15,
-            GrammarLiteral: 100,
-            GrammarLiteral_2B: 101,
-            GrammarLiteral_2C: 102,
-            GrammarLiteral_3F: 104,
-            GrammarLiteral_5B: 105,
-            GrammarLiteral_5D: 106,
-            GrammarLiteral_7B: 107,
-            GrammarLiteral_7D: 108,
-            GrammarLiteral_7E: 109,
-            GrammarLiteral$after: 218,
-            GrammarLiteral$before: 219,
-            GrammarLiteral$but: 220,
-            GrammarLiteral$empty: 221,
-            GrammarLiteral$error: 222,
-            GrammarLiteral$goal: 223,
-            GrammarLiteral$goals: 224,
-            GrammarLiteral$here: 225,
-            GrammarLiteral$if: 226,
-            GrammarLiteral$in: 227,
-            GrammarLiteral$indent: 228,
-            GrammarLiteral$lexical: 229,
-            GrammarLiteral$lookahead: 230,
-            GrammarLiteral$no: 231,
-            GrammarLiteral$not: 232,
-            GrammarLiteral$of: 233,
-            GrammarLiteral$one: 234,
-            GrammarLiteral$opt: 235,
-            GrammarLiteral$or: 236,
-            GrammarLiteral$reparse: 237,
-            GrammarLiteral$syntactic: 238,
-            GrammarLiteral$using: 239,
-            ProductionLiteral: 300,
-            Literal: 400,
-            $Unknown: 1000
+            WhiteSpace: 0x1,
+            LineTerminatorSequence: 0x2,
+            Comment: 0x3,
+            Abbreviation: 0x4,
+            ProductionName: 0x5,
+            ProductionPunctuator: 0x6,
+            GrammarStart: 0x7,
+            GrammarLiteral: 0x8,
+            ArgumentNumber: 0x9,
+            UnicodeCharacter: 0xA,
+            ProductionLiteral: 0xB,
+            Literal: 0xC,
+            $Token: 0xF
+        };
+
+        this.Literal {
+            ProductionPunctuator_3A: 0x17,
+            ProductionPunctuator_3A3A: 0x27,
+            GrammarLiteral_2B: 0x18,
+            GrammarLiteral_2C: 0x28,
+            GrammarLiteral_3F: 0x38,
+            GrammarLiteral_5B: 0x48,
+            GrammarLiteral_5D: 0x58,
+            GrammarLiteral_7B: 0x68,
+            GrammarLiteral_7D: 0x78,
+            GrammarLiteral_7E: 0x88,
+            GrammarLiteral$after: 0x98,
+            GrammarLiteral$before: 0xA8,
+            GrammarLiteral$but: 0xB8,
+            GrammarLiteral$empty: 0xC8,
+            GrammarLiteral$error: 0xD8,
+            GrammarLiteral$goal: 0xE8,
+            GrammarLiteral$goals: 0xF8,
+            GrammarLiteral$here: 0x108,
+            GrammarLiteral$if: 0x118,
+            GrammarLiteral$in: 0x128,
+            GrammarLiteral$indent: 0x138,
+            GrammarLiteral$lexical: 0x148,
+            GrammarLiteral$lookahead: 0x158,
+            GrammarLiteral$no: 0x168,
+            GrammarLiteral$not: 0x178,
+            GrammarLiteral$of: 0x188,
+            GrammarLiteral$one: 0x198,
+            GrammarLiteral$opt: 0x1A8,
+            GrammarLiteral$or: 0x1B8,
+            GrammarLiteral$reparse: 0x1C8,
+            GrammarLiteral$syntactic: 0x1D8,
+            GrammarLiteral$using: 0x1E8,
+            $Literal: 0xFFF
         };
 
         this.Unknown = {
-            ProductionPunctuator__3A: 1001,
-            GrammarLiteral$$a: 1005,
-            GrammarLiteral$$b: 1006,
-            GrammarLiteral$$e: 1007,
-            GrammarLiteral$$g: 1008,
-            GrammarLiteral$$h: 1009,
-            GrammarLiteral$$i: 1010,
-            GrammarLiteral$$l: 1011,
-            GrammarLiteral$$n: 1012,
-            GrammarLiteral$$o: 1013,
-            GrammarLiteral$$r: 1014,
-            GrammarLiteral$$s: 1015,
-            GrammarLiteral$$u: 1016,
-            Unknown1: 1100, // $ ArgumentNumber or GrammarLiteral
-            Unknown2: 1101, // < Abbreviation or GrammarLiteral
-            Unknown3: 1102, // [ GrammarStart or GrammarLiteral
-            Unknown4: 1103, // < Abbreviation or ProductionLiteral
-            Unknown5: 1104, // U UnicodeCharacter or ProductionName
-            Unknown6: 1105, // [ GrammarStart or ProductionLiteral
-            Unknown7: 1106  // [ GrammarStart or Literal
+            ProductionPunctuator__3A: 0x1001,
+            GrammarLiteral$$a: 0x1002,
+            GrammarLiteral$$b: 0x1003,
+            GrammarLiteral$$e: 0x1004,
+            GrammarLiteral$$g: 0x1005,
+            GrammarLiteral$$h: 0x1006,
+            GrammarLiteral$$i: 0x1007,
+            GrammarLiteral$$l: 0x1008,
+            GrammarLiteral$$n: 0x1009,
+            GrammarLiteral$$o: 0x100A,
+            GrammarLiteral$$r: 0x100B,
+            GrammarLiteral$$s: 0x100C,
+            GrammarLiteral$$u: 0x100D,
+            Unknown1: 0x1010, // $ ArgumentNumber or GrammarLiteral
+            Unknown2: 0x1011, // < Abbreviation or GrammarLiteral
+            Unknown3: 0x1012, // [ GrammarStart or GrammarLiteral
+            Unknown4: 0x1013, // < Abbreviation or ProductionLiteral
+            Unknown5: 0x1014, // U UnicodeCharacter or ProductionName
+            Unknown6: 0x1015, // [ GrammarStart or ProductionLiteral
+            Unknown7: 0x1016  // [ GrammarStart or Literal
         };
 
         this.Map = {

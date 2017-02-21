@@ -1,4 +1,8 @@
-/
+// TODO: no literals in InputElementFile ATM which wont work
+//       and it brings the while Literal issue back up
+//       I can't even remember why I need InputElementGrammar and GrammarLiteral!!!
+
+/*
  * Provided abbreviations
  * <ANY> - any Unicode code point
  * <USP> - any Unicode space (non-ascii character from class Zs)
@@ -22,7 +26,7 @@
     U+000D
 
 [syntactic goals JsgFile]
-[lexical goals InputElementFile or InputElementGrammar or InputElementProduction or InputElementLiteral]
+[lexical goals InputElementFile or InputElementGrammar]
 
 InputElementFile ::
     WhiteSpace
@@ -32,30 +36,15 @@ InputElementFile ::
     ProductionName
     ProductionPunctuator
     GrammarStart
+    GrammarEnd
 
 InputElementGrammar ::
     WhiteSpace
     LineTerminatorSequence
-    ProductionName
     Abbreviation
+    ProductionName
     GrammarLiteral
     ArgumentNumber
-    GrammarStart
-
-InputElementProduction ::
-    WhiteSpace
-    LineTerminatorSequence
-    ProductionName
-    Abbreviation
-    GrammarStart
-    UnicodeCharacter
-    ProductionLiteral
-
-InputElementLiteral ::
-    WhiteSpace
-    LineTerminatorSequence
-    GrammarStart
-    Literal
 
 SourceCharacter ::
     <ANY>
@@ -133,7 +122,7 @@ ProductionNamePart ::
 ProductionPunctuator :: one of
     : ::
 
-GrammarStart :: [after] [lexical goal InputElementGrammar]
+GrammarStart ::
     [ [but not LiteralFirstSymbol]
 
 GrammarLiteral ::
@@ -227,14 +216,14 @@ ProductionDetail :
 ParameterizedProductionName[Query] :
     ProductionName ProductionParameters[?Query][opt]
 
-ProductionParameters[Query] :
+ProductionParameters[Query] : [lexical goal InputElementGrammar]
     GrammarStart ProductionParameterList[?Query] ]
 
-ProductionParameterList[Query] :
+ProductionParameterList[Query] : [lexical goal InputElementGrammar]
     ProductionParameter[?Query]
     ProductionParameterList[?Query] , ProductionParameter[?Query]
 
-ProductionParameter[Query] :
+ProductionParameter[Query] : [lexical goal InputElementGrammar]
     ProductionName
     [+Query] ? ProductionName
 
@@ -258,8 +247,12 @@ ProductionStartItem :
     ProductionItem
 
 ProductionRestriction :
-    GrammarStart + ProductionName ]
-    GrammarStart ~ ProductionName ]
+    GrammarStart IncludeProduction ]
+    GrammarStart IncludeProduction ]
+
+IncludeProduction : [lexical goal InputElementGrammar]
+    + ProductionName
+    ~ ProductionName
 
 ProductionList :
     [empty]
@@ -274,12 +267,15 @@ OptionalParameterizedProductionName :
     ParameterizedProductionName[Query] OptionalMarker[opt]
 
 OptionalMarker :
-    GrammarStart opt ]
+    GrammarStart Optional ]
+
+Optional : [lexical goal InputElementGrammar]
+    opt
 
 SpecialInstruction : 
     GrammarStart CoreSpecialInstruction ]
 
-CoreSpecialInstruction :
+CoreSpecialInstruction : [lexical goal InputElementGrammar]
     EmptyProduction
     LookaheadRestriction
     ButNotRestriction
@@ -288,53 +284,53 @@ CoreSpecialInstruction :
     LocationInstruction
     ReparseInstruction
 
-EmptyProduction :
+EmptyProduction : [lexical goal InputElementGrammar]
     empty
 
-LookaheadRestriction :
+LookaheadRestriction : [lexical goal InputElementGrammar]
     lookahead not RestrictedTerminal
     lookahead not in ProductionName
     lookahead not in { RestrictedItemList }
 
-RestrictedTerminal ::
+RestrictedTerminal : [lexical goal InputElementGrammar]
     Abbreviation
     GrammarLiteral
     
-RestrictedItem :
+RestrictedItem : [lexical goal InputElementGrammar]
     RestrictedTerminal RestrictedTerminal[opt]
     ProductionName
 
-RestrictedItemList :
+RestrictedItemList : [lexical goal InputElementGrammar]
     RestrictedItem
     RestrictedItemList , RestrictedItem
 
-RestrictedItemOrList :
+RestrictedItemOrList : [lexical goal InputElementGrammar]
     RestrictedItem or RestrictedItem
     RestrictedItemOrList or RestrictedItem
 
-ButNotRestriction :
+ButNotRestriction : [lexical goal InputElementGrammar]
     but not RestrictedItem
     but not one of RestrictedItemOrList
 
-ProductionRestriction :
+ProductionRestriction : [lexical goal InputElementGrammar]
     no ProductionName here
 
-GoalProduction :
+GoalProduction : [lexical goal InputElementGrammar]
     lexical goal ProductionName
     lexical goals ProductionNameOrList
     syntactic goals ProductionNameOrList
     if syntactic goal ProductionName
 
-ProductionNameOrList :
+ProductionNameOrList : [lexical goal InputElementGrammar]
     ProductionName
     ProductionNameOrList or ProductionName
 
-LocationInstruction :
+LocationInstruction : [lexical goal InputElementGrammar]
     before
     after
     indent
 
-ReparseInstruction :
+ReparseInstruction : [lexical goal InputElementGrammar]
     reparse ArgumentNumber[opt] using ParameterizedProductionName[Query]
     reparse or error
 

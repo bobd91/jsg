@@ -1,4 +1,5 @@
 
+// TODO: speed up skipping adjoining whitespace
 class ParserCore {
     constructor(input) {
         this.input = input;
@@ -9,10 +10,12 @@ class ParserCore {
         this.pos = 0;
     }
     
+    // Get Ascii code n single width characters from current position
     la(n) {
         return this.input.charCodeAt(this.pos + n);
     }
 
+    // Get Unicode code point n single width characters from current position
     lax(n) {
         let c1 = this.la(n);
         if(c1 >= 0xD800 && c1 <= 0xDBFF) {
@@ -24,32 +27,44 @@ class ParserCore {
         return c1;
     }
 
+    // Move current position forward n characters
     forward(n) {
         this.pos += n;
     }
 
+    // Accept token of given length
+    // Token may be skipped if whitespace, line terminator or comment
+    // in which case return null
+    // Otherwise return the token
     acceptToken(type, length) {
         if(this.processWhiteSpace(type, length)) {
             return null;
         }
-        return this.makeToken(type, 0, length);
+        if(type < this.Token.$Token) {
+            return this.makeToken(type, 0, length);
+        } else {
+            return this.makeToken(type & this.Token.$Token, type, length);
+        }
     }
 
-    literalToken(type, ltype, length) {
-        this.makeToken(type, ltype, length);
-    }
-
+    // Skip the number of chars
+    // Used when token is whitespace
     skipToken(length) {
         this.line = this.linetok;
         this.linepos = this.linetokpos;
         this.forward(length);
     }
 
-    makeToken(type, ltype, length) {
+    // Make a token
+    // type must be actual token type
+    // literal must be 0 if not a literal token
+    // length is chars in token
+    makeToken(type, literal, length) {
         let pos = this.pos;
         if(length === 0 && type !== this.Token.$EOF) {
             length = 1;
             type = this.Token.$Error;
+            literal = 0;
         }
         let start = { line: this.line, col: pos - this.linepos };
         if(type === this.Token.$Error) {
@@ -61,9 +76,12 @@ class ParserCore {
         }
         this.forward(length);
         let end = { line: this.line, col: this.pos - this.linepos};
-        return new Token(type, subtype, this.input, pos, length, start, end);
+        return new Token(type, literal, this.input, pos, length, start, end);
     }
     
+    // If token type is whitespace, lineterminator or comment then skip forward
+    // and return true
+    // Otherwise return false
     processWhiteSpace(type, length) {
         if(type === this.Token.WhiteSpace) {
             this.skipToken(length);
@@ -83,10 +101,12 @@ class ParserCore {
         return false;
     }
 
+    // Return previously peeked token and remove it from tokens to return
     peekedToken() {
         return this.peekTokens.shift;
     }
 
+    // Return next non-whitespace token
     findToken() {
         let t;
         if(this.peekTokens.length) {
@@ -98,6 +118,7 @@ class ParserCore {
         return t;
     }
 
+    // Return next non-whitespace token if specified type, otherwise error
     findTokenType(type) {
         let token = this.findToken();
         if(token.type != type) {
@@ -106,18 +127,22 @@ class ParserCore {
         return token;
     }
 
+    // Return next non-whitespace token but leave it as if not found
     peekToken() {
         let token = this.findToken();
         this.peekTokens.push(token);
         return token;
     }
 
+    // Return next non-whitespace token of specified type but leave it as if not found
+    // If not correct type then error
     peekTokenType(type) {
         let token = this.findTokenType();
         this.peekTokens.push(token);
         return token;
     }
 
+    // Return the next token, may be whitespace
     nextToken() {
         let c1 = this.la(0);
         if(c1 < 128) {
@@ -126,7 +151,7 @@ class ParserCore {
                 return this.acceptToken(t, 1);
             } else {
                 t = -t;
-                if(t < this.Token.$Unknown) {
+                if(t < this.Literal.$Literal) {
                     return this.lexKnownToken(t);
                 } else {
                     return this.lexUnknownToken(t);
@@ -139,11 +164,13 @@ class ParserCore {
         }
     }
 
+    // Change the parse map, any peeked tokens will have to be reparsed
     setMap(map) {
         this.map = map;
         this.peekTokens = [];
     }
 
+    // Line counting
     newLine(n) {
         this.linetok ++;
         this.linetokpos = this.pos + n;
