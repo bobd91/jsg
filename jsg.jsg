@@ -20,20 +20,22 @@
 //       [but not one of ...       a SpecialInstruction
 //       and, from above
 //       [ Aa ]                    Ascii [, ProductionName, ]
-//       [Aa]                      ProductionParameters
+//       [Aa]                      ProductionParameter
 //
 //       Also, may want to recognize
 //       [~, [+, [? as as literal but
 //       [~PPName] as ProductionParameter
-//       Is this a problem?  Not sure that it is
-//       [~ ProductionName ] vs [~PPName] are still different
 //
 //       All seem to boil down to whitespace handling
 //
+//       Note:
+//       LHS suffix can be [Xx] [Xx, Yy] etc
+//       RHS prefix can be [+Xx] or [~Xx]
+//       RHS suffix can be [Xx], [?Xx], [Xx, Yy] [Xx, ?Yy] [?Xx, ?Yy] etc 
 //
 //       Another, separate issue, 
 //       How to recognize sequences of symbol literals in comma lists?
-//       not one of &, -), +,, - for example where this means
+//       [not one of &, -), +,, -] for example where this means
 //       not one of "&" "-)" "+," "-"
 //       No idea how to handle this
 //
